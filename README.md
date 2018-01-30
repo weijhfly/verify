@@ -1,5 +1,5 @@
 # verify [![npm](https://img.shields.io/npm/v/form-verify.svg)](https://www.npmjs.com/package/form-verify) [![npm](https://img.shields.io/npm/dm/form-verify.svg)](https://www.npmjs.com/package/form-verify)
-> 统一的表单验证解决方案
+> 统一的表单验证解决
 # Install
 ```js
 $ npm install --save form-verify
