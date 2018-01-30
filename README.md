@@ -8,9 +8,9 @@ $ npm install --save form-verify
 ```js
 var verify = require('form-verify');
 
-verify.js不干预dom和样式，不提供默认提示，只做纯校验过程。
-使用方式：
-传入配置对象
+//verify.js不干预dom和样式，不提供默认提示，只做纯校验过程。
+
+//使用方式：
 var v = verify({
 		type:'single',//multi
 		trim:false,//可选
@@ -19,6 +19,8 @@ var v = verify({
 	[
 	{
 		value:val,
+		el:'dom',
+		model:'model',
 		isEmpty:'用户名不能为空',
 		minLength:'密码长度不小于6位&6',
 		maxLength:'密码长度最大12位&12',
@@ -27,10 +29,10 @@ var v = verify({
 		custom:['&==2','错误-不等于2']
 	}
 	]);
-返回：
-'single' -- 返回验证结果及单条错误信息。
-'multi' --  返回验证结果及多条错误信息，并设置dom。
-'data:vue/angular' --  返回验证结果及错误信息，并设置model。
+//返回：
+'single' //返回验证结果及单条错误信息。
+'multi' //返回验证结果及多条错误信息，并设置dom。
+'data:vue/angular' //返回验证结果及错误信息，并设置model。
 
 ```
 ## Update
