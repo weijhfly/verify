@@ -1,5 +1,5 @@
 /*!
- * verify.js v1.0.2
+ * verify.js v1.0.3
  * By weijianhua  https://github.com/weijhfly/verify
  * Time:2018/1/30
 */

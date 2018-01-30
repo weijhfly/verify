@@ -1,5 +1,5 @@
 # verify [![npm](https://img.shields.io/npm/v/form-verify.svg)](https://www.npmjs.com/package/form-verify) [![npm](https://img.shields.io/npm/dm/form-verify.svg)](https://www.npmjs.com/package/form-verify)
-> 统一的表单验证解决
+> 统一的表单验证方式实现
 # Install
 ```js
 $ npm install --save form-verify
@@ -29,6 +29,7 @@ var v = verify({
 		custom:['&==2','错误-不等于2']
 	}
 	]);
+	
 //返回：
 'single' //返回验证结果及单条错误信息。
 'multi' //返回验证结果及多条错误信息，并设置dom。
