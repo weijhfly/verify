@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=0">
+	<title>single test</title>
+	<style>
+		span{
+			display: inline-block;
+			width: 65px;
+		}
+	</style>
+</head>
+<body>
+	<div>
+		<span>用户名：</span><input type="text" id="username">
+		<hr>
+		<span>密码：</span><input type="password" id="password">
+		<hr>
+		<span>手机号：</span><input type="text" id="phone">
+		<hr>
+		<span></span><button type="button" id="button">提交</button>
+	</div>
+	<script src="../verify.js"></script>
+	<script>
+		var button = document.getElementById('button');
+		button.onclick = function(){
+			var username = document.getElementById('username'),
+				password = document.getElementById('password'),
+				phone = document.getElementById('phone');
+				
+			var v = verify({
+					type:'single',
+					//trim:false,可选，默认trim:true;
+				},
+				[
+					{
+						value:username.value,
+						isEmpty:'用户名不能为空',
+						//trim:false,可选，如果这里设置false，则以此为准;
+					},
+					{
+						value:password.value,
+						isEmpty:'密码不能为空',
+						minLength:'密码长度不小于6位&6',
+						maxLength:'密码长度最大12位&12',
+						//length:'密码长度在6-12位&6-12',
+					},
+					{
+						value:phone.value,
+						isEmpty:'手机号不能为空',
+						isMobile:'手机号不正确',
+						//isMobile:[自定义正则,'手机号不正确'],
+					},
+				]);
+			
+			console.log(v);
+			if(!v.check){
+				alert(v.l[0]);
+				return false;
+			}else{
+				//提交
+				alert('提交');
+			}
+		}
+	</script>
+</body>
+</html>

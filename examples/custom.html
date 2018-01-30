@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1.0, user-scalable=0">
+	<title>custom test</title>
+	<style>
+		label{
+			display: inline-block;
+			width: 65px;
+		}
+		.error{
+			margin-left:5px;
+			color:red;
+		}
+	</style>
+</head>
+<body>
+	<div id="app">
+		<label>用户名：</label><input type="text" v-model="username" @click="clear(1)"><span class="error" v-text="error1"></span>
+		<hr>
+		<label>密码：</label><input type="password" v-model="password" @click="clear(2)"><span class="error" v-text="error2"></span>
+		<hr>
+		<label>手机号：</label><input type="text" v-model="phone" @click="clear(3)"><span class="error" v-text="error3"></span>
+		<hr>
+		<label></label><button type="button" @click="check">提交</button>
+	</div>
+	<script src="../verify.js"></script>
+	<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+	<script>
+	/*
+		verify.js 支持灵活的验证方式
+		{
+			value:value,
+			model:'error1',
+			isEmpty:'noEmpty',
+			custom:[表达式,错误信息]
+		}
+		custom中的表达式支持正则，布尔值，字符串,表达式返回false,将展示错误信息。
+		
+		例如：
+			正则--
+			custom:[/\d/,'请输入数字'];
+			布尔值--
+			custom:[1>2,'1小于2'];
+			字符串--&表示value
+			custom:['&>5','必须大于5'];
+	*/
+	new Vue({
+		el:"#app",
+		data:{
+			username:'',
+			password:'',
+			phone:'',
+			error1:'',
+			error2:'',
+			error3:'',
+		},
+		methods:{
+			check:function(){
+				var _this = this;
+				var v = verify({
+					type:'multi',
+					//trim:false,可选，默认trim:true;
+					data:_this//不限于vue,还有AngularJS等其他框架
+				},
+				[
+					{
+						value:_this.username,
+						model:'error1',//model 名称
+						isEmpty:'用户名不能为空',
+						custom:[/[^\d]/g,'不能输入纯数字']
+					},
+					{
+						value:_this.password,
+						model:'error2',//model 名称
+						isEmpty:'密码不能为空',
+						custom:[_this.password.length >= 6 && _this.password.length <= 12,'密码长度在6-12位']
+					},
+					{
+						value:_this.phone,
+						model:'error3',//model 名称
+						isEmpty:'手机号不能为空',
+						custom:['&.length==11','手机号不是11位']
+					},
+				]);
+			
+				console.log(v);
+				if(!v.check){
+					return false;
+				}else{
+					//提交
+					alert('提交');
+				}
+			},
+			clear:function(i){
+				eval('this.error'+i+'="";');
+			}
+		}
+	});
+	</script>
+</body>
+</html>
