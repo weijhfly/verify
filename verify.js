@@ -1,5 +1,5 @@
 /*!
- * verify.js v1.0.3
+ * verify.js v1.0.4
  * By weijianhua  https://github.com/weijhfly/verify
  * Time:2018/1/30
 */
@@ -49,6 +49,7 @@
 		doc = window.document,
 		error = false;
 
+	outer:
 	for(i=0;i<lens;i++){
 		var l = list[i];
 			val = l.value;
@@ -137,36 +138,42 @@
 			}
 		}
 		if(l.custom){
-			var rule = l.custom[0],
-				msg = l.custom[1];
-				
-			if(typeof rule  == 'string'){
-				if(!eval(rule.replace(/&/g,"'"+val+"'"))){
+			if(!(l.custom[0] instanceof Array)){l.custom = [[l.custom[0],l.custom[1]]]};
+			var len = l.custom.length;
+
+			inter:
+			for(var j=0;j<len;j++){
+			    var rule = l.custom[j][0],
+					msg = l.custom[j][1];
+
+				if(typeof rule  == 'string'){
+					if(!eval(rule.replace(/&/g,"'"+val+"'"))){
+						arr[i] = msg;
+						if(isSingle){
+							break outer;
+						}else{
+							setError();
+							continue outer;
+						}
+					}
+				}else if(typeof rule  == 'object' && !rules.custom(val,rule)){
 					arr[i] = msg;
 					if(isSingle){
-						break;
+						break outer;
 					}else{
 						setError();
-						continue;
+						continue outer;
+					}
+				}else if(typeof rule  == 'boolean' && !rule){
+					arr[i] = msg;
+					if(isSingle){
+						break outer;
+					}else{
+						setError();
+						continue outer;
 					}
 				}
-			}else if(typeof rule  == 'object' && !rules.custom(val,rule)){
-				arr[i] = msg;
-				if(isSingle){
-					break;
-				}else{
-					setError();
-					continue;
-				}
-			}else if(typeof rule  == 'boolean' && !rule){
-				arr[i] = msg;
-				if(isSingle){
-					break;
-				}else{
-					setError();
-					continue;
-				}
-			}
+			} 
 		}
 		
 	}
