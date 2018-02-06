@@ -1,5 +1,5 @@
 /*!
- * verify.js v1.0.4
+ * verify.js v1.0.5
  * By weijianhua  https://github.com/weijhfly/verify
  * Time:2018/1/30
 */
@@ -45,9 +45,9 @@
 		result = {check:true},
 		lens = list.length,
 		i = 0,
-		isTrim = config.type != false,
+		isTrim = config.trim != false,
 		doc = window.document,
-		error = false;
+		isError = false;
 
 	outer:
 	for(i=0;i<lens;i++){
@@ -187,7 +187,7 @@
 				l.el.text(arr[i]);
 			}
 		}
-		error = true;
+		isError = true;
 	}
 	if(isSingle){
 		if(arr.length != 0){result.check = false;}
@@ -196,7 +196,7 @@
 		})
 		return result;
 	}else{
-		if(error){result.check = false;}
+		if(isError){result.check = false;}
 		result.l = arr;
 		return result;
 	}
