@@ -1,12 +1,14 @@
 /*!
- * verify.js v1.1.5
+ * verify.js v1.1.6
  * By weijianhua  https://github.com/weijhfly/verify
  * Time:2018/1/30
 */
 ;(function(){
+	'use strict';
+	
 	var rules = {
 		isEmpty:function(value){
-			return value == '';
+			return value === '';
 		},
 		minLength:function(value,length){
 			return value.length >= length;
@@ -25,7 +27,7 @@
 		custom:function(value,rule){
 			return rule.test(value);
 		}
-	}
+	};
 
 	var Verify = function(config, list){
 		
@@ -40,7 +42,7 @@
 		_this.list = list;
 		
 		return _this.exec();
-	}
+	};
 
 	Verify.prototype = {
 		constructor:Verify,
@@ -55,18 +57,22 @@
 				result = {check:true},
 				lens = list.length,
 				i = 0,
-				isTrim = config.trim != false,
+				isTrim = config.trim !== false,
 				doc = window.document,
 				isError = false;
 
 			outer:
-			for(i=0;i<lens;i++){
+			for(i=0; i<lens; i++){
 				if(!list[i]){continue;}
 				
-				var l = list[i];
-					val = l.value;
+				var l = list[i],
+					val = l.value,
+					index,
+					msg,
+					len,
+					rule;
 					
-				if(isTrim && l.trim != false && typeof val == 'string'){
+				if(isTrim && l.trim !== false && typeof val === 'string'){
 					try{
 						val = val.trim();
 					}catch(e){
@@ -84,8 +90,8 @@
 					}
 				}
 				if(l.minLength){
-					var index = l.minLength.lastIndexOf('&'),
-						msg = l.minLength.substring(0,index),
+						index = l.minLength.lastIndexOf('&');
+						msg = l.minLength.substring(0,index);
 						len = l.minLength.substring(index+1);
 						
 					if(!rules.minLength(val,len)){
@@ -99,8 +105,8 @@
 					}
 				}
 				if(l.maxLength){
-					var index = l.maxLength.lastIndexOf('&'),
-						msg = l.maxLength.substring(0,index),
+						index = l.maxLength.lastIndexOf('&');
+						msg = l.maxLength.substring(0,index);
 						len = l.maxLength.substring(index+1);
 						
 					if(!rules.maxLength(val,len)){
@@ -114,11 +120,11 @@
 					}
 				}
 				if(l.length){
-					var index = l.length.lastIndexOf('&'),
-						msg = l.length.substring(0,index),
-						len = l.length.substring(index+1),
-						min = len.match(/^\d+/),
-						max = len.match(/\d+$/);
+						index = l.length.lastIndexOf('&');
+						msg = l.length.substring(0,index);
+						len = l.length.substring(index+1);
+						var	min = len.match(/^\d+/),
+							max = len.match(/\d+$/);
 						
 					if(!rules.length(val,min,max)){
 						arr[i] = msg;
@@ -140,8 +146,8 @@
 							continue;
 						}
 					}else if(typeof l.isMobile == 'object'){
-						var rule = l.isMobile[0],
-							msg = l.isMobile[1];
+						rule = l.isMobile[0];
+						msg = l.isMobile[1];
 						if(!rules.isMobile(val,rule)){
 							arr[i] = msg;
 							if(isSingle){
@@ -154,16 +160,16 @@
 					}
 				}
 				if(l.custom){
-					if(!(l.custom[0] instanceof Array)){l.custom = [[l.custom[0],l.custom[1]]]};
-					var len = l.custom.length;
+					if(!(l.custom[0] instanceof Array)){l.custom = [[l.custom[0],l.custom[1]]];}
+					len = l.custom.length;
 
 					inter:
-					for(var j=0;j<len;j++){
-						var rule = l.custom[j][0],
+					for(var j=0; j<len; j++){
+							rule = l.custom[j][0];
 							msg = l.custom[j][1];
 
-						if(typeof rule  == 'string'){
-							if(!eval(rule.replace(/&/g,"'"+val+"'"))){
+						if(typeof rule  === 'string'){
+							if(!evaluate(rule.replace(/&/g,"'"+val+"'"))){
 								arr[i] = msg;
 								if(isSingle){
 									break outer;
@@ -172,7 +178,7 @@
 									continue outer;
 								}
 							}
-						}else if(typeof rule  == 'object' && !rules.custom(val,rule)){
+						}else if(typeof rule  === 'object' && !rules.custom(val,rule)){
 							arr[i] = msg;
 							if(isSingle){
 								break outer;
@@ -180,7 +186,7 @@
 								setError();
 								continue outer;
 							}
-						}else if(typeof rule  == 'boolean' && !rule){
+						}else if(typeof rule  === 'boolean' && !rule){
 							arr[i] = msg;
 							if(isSingle){
 								break outer;
@@ -192,6 +198,10 @@
 					} 
 				}
 				
+			}
+			function evaluate(str){
+				var fn = Function;
+				return new fn('return ' + str)();
 			}
 			function setError(){
 				if(config.data){
@@ -206,8 +216,8 @@
 				isError = true;
 			}
 			if(isSingle){
-				if(arr.length != 0){result.check = false;}
-				result.l = arr.length == 1? arr:[arr.toString().replace(/^,*/,'')];
+				if(arr.length !== 0){result.check = false;}
+				result.l = arr.length === 1? arr:[arr.toString().replace(/^,*/,'')];
 				return result;
 			}else{
 				if(isError){result.check = false;}
@@ -215,7 +225,7 @@
 				return result;
 			}
 		}
-	}
+	};
 	
 	if (typeof define === 'function' && define.amd) {
 		define(function(){return Verify;});
@@ -224,4 +234,4 @@
 	}else {
 		window.verify = Verify;
 	}
-})()
+})();
