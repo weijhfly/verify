@@ -28,7 +28,7 @@
 			var username = document.getElementById('username'),
 				password = document.getElementById('password'),
 				phone = document.getElementById('phone');
-				
+
 			var v = verify({
 					type:'single',
 					//trim:false,可选，默认trim:true;
@@ -51,9 +51,9 @@
 						isEmpty:'手机号不能为空',
 						isMobile:'手机号不正确',
 						//isMobile:[自定义正则,'手机号不正确'],
-					},
+					}
 				]);
-			
+
 			console.log(v);
 			if(!v.check){
 				alert(v.l[0]);

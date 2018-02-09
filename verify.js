@@ -1,22 +1,9 @@
 /*!
- * verify.js v1.0.5
+ * verify.js v1.1.5
  * By weijianhua  https://github.com/weijhfly/verify
  * Time:2018/1/30
 */
-;(function (factory) {
-	if (typeof define === 'function' && define.amd) {
-		define(function(){return factory;});
-	}else if (typeof exports === "object") {
-		module.exports = factory;
-	}else {
-		window.verify = factory;
-	}
-}(function(config,list){
-
-	if(!config || !list){
-		return false;
-	}
-	
+;(function(){
 	var rules = {
 		isEmpty:function(value){
 			return value == '';
@@ -39,95 +26,56 @@
 			return rule.test(value);
 		}
 	}
-	
-	var isSingle = config.type == 'single',
-		arr = [],
-		result = {check:true},
-		lens = list.length,
-		i = 0,
-		isTrim = config.trim != false,
-		doc = window.document,
-		isError = false;
 
-	outer:
-	for(i=0;i<lens;i++){
-		var l = list[i];
-			val = l.value;
-			
-		if(isTrim && l.trim != false && typeof val == 'string'){
-			val = val.trim();
+	var Verify = function(config, list){
+		
+		if(!(this instanceof Verify)){
+			return new Verify(config, list);
 		}
+		if(!config || !list){
+			return false;
+		}
+		var _this = this;
+		_this.config = config;
+		_this.list = list;
+		
+		return _this.exec();
+	}
 
-		if(l.isEmpty && rules.isEmpty(val)){
-			arr[i] = l.isEmpty;
-			if(isSingle){
-				break;
-			}else{
-				setError();
-				continue;
-			}
-		}
-		if(l.minLength){
-			var index = l.minLength.lastIndexOf('&'),
-				msg = l.minLength.substring(0,index),
-				len = l.minLength.substring(index+1);
+	Verify.prototype = {
+		constructor:Verify,
+		rules:rules,
+		exec:function(){
+			var _this = this,
+				config = _this.config,
+				list = _this.list,
+				rules = _this.rules,
+				isSingle = config.type == 'single',
+				arr = [],
+				result = {check:true},
+				lens = list.length,
+				i = 0,
+				isTrim = config.trim != false,
+				doc = window.document,
+				isError = false;
+
+			outer:
+			for(i=0;i<lens;i++){
+				if(!list[i]){continue;}
 				
-			if(!rules.minLength(val,len)){
-				arr[i] = msg;
-				if(isSingle){
-					break;
-				}else{
-					setError();
-					continue;
+				var l = list[i];
+					val = l.value;
+					
+				if(isTrim && l.trim != false && typeof val == 'string'){
+					try{
+						val = val.trim();
+					}catch(e){
+						val = val.replace(/^\s+|\s+$/gm,'');
+					}
 				}
-			}
-		}
-		if(l.maxLength){
-			var index = l.maxLength.lastIndexOf('&'),
-				msg = l.maxLength.substring(0,index),
-				len = l.maxLength.substring(index+1);
-				
-			if(!rules.maxLength(val,len)){
-				arr[i] = msg;
-				if(isSingle){
-					break;
-				}else{
-					setError();
-					continue;
-				}
-			}
-		}
-		if(l.length){
-			var index = l.length.lastIndexOf('&'),
-				msg = l.length.substring(0,index),
-				len = l.length.substring(index+1),
-				min = len.match(/^\d+/),
-				max = len.match(/\d+$/);
-				
-			if(!rules.length(val,min,max)){
-				arr[i] = msg;
-				if(isSingle){
-					break;
-				}else{
-					setError();
-					continue;
-				}
-			}
-		}
-		if(l.isMobile){
-			if(typeof l.isMobile == 'string' && !rules.isMobile(val)){
-				arr[i] = l.isMobile;
-				if(isSingle){
-					break;
-				}else{
-					setError();
-					continue;
-				}
-			}else if(typeof l.isMobile == 'object'){
-				var rule = l.isMobile[0],
-					msg = l.isMobile[1];
-				if(!rules.isMobile(val,rule)){
-					arr[i] = msg;
+
+				if(l.isEmpty && rules.isEmpty(val)){
+					arr[i] = l.isEmpty;
 					if(isSingle){
 						break;
 					}else{
@@ -135,69 +83,145 @@
 						continue;
 					}
 				}
-			}
-		}
-		if(l.custom){
-			if(!(l.custom[0] instanceof Array)){l.custom = [[l.custom[0],l.custom[1]]]};
-			var len = l.custom.length;
-
-			inter:
-			for(var j=0;j<len;j++){
-			    var rule = l.custom[j][0],
-					msg = l.custom[j][1];
-
-				if(typeof rule  == 'string'){
-					if(!eval(rule.replace(/&/g,"'"+val+"'"))){
+				if(l.minLength){
+					var index = l.minLength.lastIndexOf('&'),
+						msg = l.minLength.substring(0,index),
+						len = l.minLength.substring(index+1);
+						
+					if(!rules.minLength(val,len)){
 						arr[i] = msg;
 						if(isSingle){
-							break outer;
+							break;
 						}else{
 							setError();
-							continue outer;
+							continue;
 						}
 					}
-				}else if(typeof rule  == 'object' && !rules.custom(val,rule)){
-					arr[i] = msg;
-					if(isSingle){
-						break outer;
-					}else{
-						setError();
-						continue outer;
-					}
-				}else if(typeof rule  == 'boolean' && !rule){
-					arr[i] = msg;
-					if(isSingle){
-						break outer;
-					}else{
-						setError();
-						continue outer;
+				}
+				if(l.maxLength){
+					var index = l.maxLength.lastIndexOf('&'),
+						msg = l.maxLength.substring(0,index),
+						len = l.maxLength.substring(index+1);
+						
+					if(!rules.maxLength(val,len)){
+						arr[i] = msg;
+						if(isSingle){
+							break;
+						}else{
+							setError();
+							continue;
+						}
 					}
 				}
-			} 
-		}
-		
-	}
-	function setError(){
-		if(config.data){
-			config.data[l.model] = arr[i];
-		}else{
-			if(typeof l.el == 'string'){
-				doc.querySelector(l.el).innerHTML = arr[i];
+				if(l.length){
+					var index = l.length.lastIndexOf('&'),
+						msg = l.length.substring(0,index),
+						len = l.length.substring(index+1),
+						min = len.match(/^\d+/),
+						max = len.match(/\d+$/);
+						
+					if(!rules.length(val,min,max)){
+						arr[i] = msg;
+						if(isSingle){
+							break;
+						}else{
+							setError();
+							continue;
+						}
+					}
+				}
+				if(l.isMobile){
+					if(typeof l.isMobile == 'string' && !rules.isMobile(val)){
+						arr[i] = l.isMobile;
+						if(isSingle){
+							break;
+						}else{
+							setError();
+							continue;
+						}
+					}else if(typeof l.isMobile == 'object'){
+						var rule = l.isMobile[0],
+							msg = l.isMobile[1];
+						if(!rules.isMobile(val,rule)){
+							arr[i] = msg;
+							if(isSingle){
+								break;
+							}else{
+								setError();
+								continue;
+							}
+						}
+					}
+				}
+				if(l.custom){
+					if(!(l.custom[0] instanceof Array)){l.custom = [[l.custom[0],l.custom[1]]]};
+					var len = l.custom.length;
+
+					inter:
+					for(var j=0;j<len;j++){
+						var rule = l.custom[j][0],
+							msg = l.custom[j][1];
+
+						if(typeof rule  == 'string'){
+							if(!eval(rule.replace(/&/g,"'"+val+"'"))){
+								arr[i] = msg;
+								if(isSingle){
+									break outer;
+								}else{
+									setError();
+									continue outer;
+								}
+							}
+						}else if(typeof rule  == 'object' && !rules.custom(val,rule)){
+							arr[i] = msg;
+							if(isSingle){
+								break outer;
+							}else{
+								setError();
+								continue outer;
+							}
+						}else if(typeof rule  == 'boolean' && !rule){
+							arr[i] = msg;
+							if(isSingle){
+								break outer;
+							}else{
+								setError();
+								continue outer;
+							}
+						}
+					} 
+				}
+				
+			}
+			function setError(){
+				if(config.data){
+					config.data[l.model] = arr[i];
+				}else{
+					if(typeof l.el == 'string'){
+						doc.querySelector(l.el).innerHTML = arr[i];
+					}else{
+						l.el.text(arr[i]);
+					}
+				}
+				isError = true;
+			}
+			if(isSingle){
+				if(arr.length != 0){result.check = false;}
+				result.l = arr.length == 1? arr:[arr.toString().replace(/^,*/,'')];
+				return result;
 			}else{
-				l.el.text(arr[i]);
+				if(isError){result.check = false;}
+				result.l = arr;
+				return result;
 			}
 		}
-		isError = true;
 	}
-	if(isSingle){
-		if(arr.length != 0){result.check = false;}
-		result.l = arr.filter(function(v){
-			return v;
-		})
-		return result;
-	}else{
-		if(isError){result.check = false;}
-		result.l = arr;
-		return result;
+	
+	if (typeof define === 'function' && define.amd) {
+		define(function(){return Verify;});
+	}else if (typeof exports === "object") {
+		module.exports = Verify;
+	}else {
+		window.verify = Verify;
 	}
-}))
+})()

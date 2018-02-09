@@ -33,7 +33,7 @@
 			var username = document.getElementById('username'),
 				password = document.getElementById('password'),
 				phone = document.getElementById('phone');
-				
+
 			var v = verify({
 					type:'multi',
 					//trim:false,可选，默认trim:true;
@@ -61,7 +61,7 @@
 						//isMobile:[自定义正则,'手机号不正确'],
 					},
 				]);
-			
+
 			console.log(v);
 			if(!v.check){
 				return false;

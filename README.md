@@ -9,6 +9,7 @@ $ npm install --save form-verify
 var verify = require('form-verify');
 
 //verify.js不干预dom和样式，不提供默认提示，只做纯校验过程。
+//注：不兼容ie7
 
 //使用方式：
 var v = verify({
@@ -37,6 +38,10 @@ var v = verify({
 
 ```
 ## Update
+### 2018.2.9(Update)
+
+> * 使用new重构verify.js
+> * 修复ie8下的trim、filter等报错
 ### 2018.1.30(publish)
 
 > * 发布至github及npm(form-verify)
