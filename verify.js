@@ -1,5 +1,5 @@
 /*!
- * verify.js v1.1.6
+ * verify.js v1.1.7
  * By weijianhua  https://github.com/weijhfly/verify
  * Time:2018/1/30
 */
@@ -29,19 +29,22 @@
 		}
 	};
 
-	var Verify = function(config, list){
+	var Verify = function(config, items){
 		
 		if(!(this instanceof Verify)){
-			return new Verify(config, list);
+			return new Verify(config, items);
 		}
-		if(!config || !list){
+		if(!config || !items){
 			return false;
 		}
-		var _this = this;
-		_this.config = config;
-		_this.list = list;
 		
-		return _this.exec();
+		var _this = this;
+		_this.check = true;
+		_this.l = [];
+		_this.config = config;
+		_this.items = items;
+		
+		_this.exec();
 	};
 
 	Verify.prototype = {
@@ -50,12 +53,11 @@
 		exec:function(){
 			var _this = this,
 				config = _this.config,
-				list = _this.list,
+				items = _this.items,
 				rules = _this.rules,
 				isSingle = config.type == 'single',
 				arr = [],
-				result = {check:true},
-				lens = list.length,
+				lens = items.length,
 				i = 0,
 				isTrim = config.trim !== false,
 				doc = window.document,
@@ -63,9 +65,9 @@
 
 			outer:
 			for(i=0; i<lens; i++){
-				if(!list[i]){continue;}
+				if(!items[i]){continue;}
 				
-				var l = list[i],
+				var l = items[i],
 					val = l.value,
 					index,
 					msg,
@@ -90,9 +92,9 @@
 					}
 				}
 				if(l.minLength){
-						index = l.minLength.lastIndexOf('&');
-						msg = l.minLength.substring(0,index);
-						len = l.minLength.substring(index+1);
+					index = l.minLength.lastIndexOf('&');
+					msg = l.minLength.substring(0,index);
+					len = l.minLength.substring(index+1);
 						
 					if(!rules.minLength(val,len)){
 						arr[i] = msg;
@@ -105,9 +107,9 @@
 					}
 				}
 				if(l.maxLength){
-						index = l.maxLength.lastIndexOf('&');
-						msg = l.maxLength.substring(0,index);
-						len = l.maxLength.substring(index+1);
+					index = l.maxLength.lastIndexOf('&');
+					msg = l.maxLength.substring(0,index);
+					len = l.maxLength.substring(index+1);
 						
 					if(!rules.maxLength(val,len)){
 						arr[i] = msg;
@@ -120,11 +122,11 @@
 					}
 				}
 				if(l.length){
-						index = l.length.lastIndexOf('&');
-						msg = l.length.substring(0,index);
-						len = l.length.substring(index+1);
-						var	min = len.match(/^\d+/),
-							max = len.match(/\d+$/);
+					index = l.length.lastIndexOf('&');
+					msg = l.length.substring(0,index);
+					len = l.length.substring(index+1);
+					var	min = len.match(/^\d+/),
+						max = len.match(/\d+$/);
 						
 					if(!rules.length(val,min,max)){
 						arr[i] = msg;
@@ -216,13 +218,11 @@
 				isError = true;
 			}
 			if(isSingle){
-				if(arr.length !== 0){result.check = false;}
-				result.l = arr.length === 1? arr:[arr.toString().replace(/^,*/,'')];
-				return result;
+				if(arr.length !== 0){_this.check = false;}
+				_this.l = arr.length === 1? arr:[arr.toString().replace(/^,*/,'')];
 			}else{
-				if(isError){result.check = false;}
-				result.l = arr;
-				return result;
+				if(isError){_this.check = false;}
+				_this.l = arr;
 			}
 		}
 	};
