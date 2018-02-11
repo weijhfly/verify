@@ -1,6 +1,6 @@
 /*!
- * verify.js v1.1.7
- * By weijianhua  https://github.com/weijhfly/verify
+ * verify.js v1.1.8
+ * By 雾空 https://github.com/weijhfly/verify
  * Time:2018/1/30
 */
 ;(function(){

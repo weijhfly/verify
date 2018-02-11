@@ -1,6 +1,6 @@
 {
   "name": "form-verify",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "统一的表单验证方式实现",
   "main": "verify.js",
   "bin": "verify.js",
